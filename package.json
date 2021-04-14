@@ -1,0 +1,25 @@
+{
+  "name": "reduxtdd",
+  "version": "0.1.0",
+  "description": "redux with tdd",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sparki123/reduxTDD.git"
+  },
+  "author": "KIRUHA",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sparki123/reduxTDD/issues"
+  },
+  "homepage": "https://github.com/Sparki123/reduxTDD#readme",
+  "dependencies": {
+    "@babel/core": "^7.13.14",
+    "@babel/preset-env": "^7.13.12",
+    "babel-jest": "^26.6.3",
+    "jest": "^26.6.3"
+  }
+}
