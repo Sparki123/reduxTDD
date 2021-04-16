@@ -5,6 +5,21 @@ export function createStore(reducer, initialState, enhancer) {
     throw new Error("reducer must be a function");
   }
 
+  // TODO create test
+  if (typeof initialState === "function") {
+    enhancer = initialState;
+    initialState = undefined;
+  }
+
+  // TODO create test
+  if (!["undefined", "function"].includes(typeof enhancer)) {
+    throw new Error("enhancer must be a function");
+  }
+
+  if (enhancer !== undefined) {
+    return enhancer(createStore)(reducer, initialState);
+  }
+
   let state = initialState;
   let listeners = [];
 

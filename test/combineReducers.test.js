@@ -1,7 +1,7 @@
 import { combineReducers } from "../src/combineReducers";
 
 describe("combineReducers", () => {
-  it("should retu", () => {
+  it("should return reducer that maps state keys to reducers from argument", () => {
     const reducerCounter = (state = 0, action) => {
       if (action.type === "INCREMENT") {
         return state + 1;

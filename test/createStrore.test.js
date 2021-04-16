@@ -125,3 +125,106 @@ describe("createStore", () => {
     expect(listenerTwo.mock.calls).toHaveLength(2);
   });
 });
+
+describe("createStore with enhancer", () => {
+  it("should decorate createStore with enhancer modified getState", () => {
+    function enhancer(createStore) {
+      return function (reducer, initialState) {
+        const store = createStore(reducer, initialState);
+        const { getState } = store;
+
+        function wrappedGetState() {
+          const state = getState();
+          return {
+            ...state,
+            hello: 123,
+          };
+        }
+
+        return {
+          ...store,
+          getState: wrappedGetState,
+        };
+      };
+    }
+
+    const reducer = (state = {}, action) => {
+      if (action.type === "ADD") {
+        return { ...state, [action.key]: action.value };
+      }
+      return state;
+    };
+    const store = createStore(reducer, enhancer);
+
+    store.dispatch({
+      type: "ADD",
+      key: "key",
+      value: "value",
+    });
+
+    expect(store.getState()).toEqual({
+      key: "value",
+      hello: 123,
+    });
+  });
+
+  it("should decorate createStore with enhancer modified dispatch", () => {
+    function enhancer(createStore) {
+      return function (reducer, initialState) {
+        const store = createStore(reducer, initialState);
+        const { dispatch, getState } = store;
+
+        function wrappedDispatch(action) {
+          if (typeof action === "function") {
+            return action(dispatch, getState);
+          }
+
+          return dispatch(action);
+        }
+
+        return {
+          ...store,
+          dispatch: wrappedDispatch,
+        };
+      };
+    }
+
+    const reducer = (state = {}, action) => {
+      if (action.type === "ADD") {
+        return { ...state, [action.key]: action.value };
+      }
+      return state;
+    };
+
+    const store = createStore(reducer, enhancer);
+    const actionCreator = (key) => {
+      return function (dispatch, getState) {
+        return Promise.resolve("qwerty").then((value) => {
+          dispatch({
+            type: "ADD",
+            key,
+            value,
+          });
+        });
+      };
+    };
+
+    store.dispatch({
+      type: "ADD",
+      key: "abc",
+      value: "xyz",
+    });
+
+    expect(store.getState()).toEqual({
+      abc: "xyz",
+    });
+
+    // https://redux.js.org/recipes/writing-tests#async-action-creators
+    store.dispatch(actionCreator("hello")).then(() => {
+      expect(store.getState()).toEqual({
+        abc: "xyz",
+        hello: "qwerty",
+      });
+    });
+  });
+});
